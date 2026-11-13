@@ -1,0 +1,10 @@
+{
+  "name": "NOVA AI",
+  "short_name": "NOVA",
+  "description": "Your personal assistant for planning, finance and trading tools",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#080d19",
+  "theme_color": "#080d19",
+  "orientation": "portrait"
+}

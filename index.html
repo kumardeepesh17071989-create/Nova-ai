@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080d19">
+<meta name="description" content="NOVA AI - your personal assistant">
+<link rel="manifest" href="manifest.json">
+<title>NOVA AI</title>
+<style>
+:root{--bg:#080d19;--panel:#111a2b;--panel2:#172238;--text:#eef4ff;--muted:#9aabc6;--accent:#70d7ff;--line:#263650;--good:#64dda0;--bad:#ff8d9b}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#1b3154 0,#080d19 48%);color:var(--text);font:15px system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+header{padding:22px 18px 12px;display:flex;align-items:center;justify-content:space-between;max-width:760px;margin:auto}
+.brand{font-weight:850;letter-spacing:2px;font-size:23px}.brand span{color:var(--accent)}.sub{color:var(--muted);font-size:12px;margin-top:3px}
+main{max-width:760px;margin:auto;padding:8px 15px 100px}
+.hero{background:linear-gradient(135deg,#142743,#10182a 65%,#17233c);border:1px solid #2b4567;border-radius:22px;padding:20px;box-shadow:0 12px 35px #0005}
+.orb{width:56px;height:56px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#78e4ff 22%,#5369e8 58%,#1c2455);box-shadow:0 0 28px #63cfff77;margin-bottom:14px}
+h1{font-size:23px;margin:0 0 6px}p{line-height:1.5}.muted{color:var(--muted)}.small{font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:15px 0}
+.tile,.panel{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:15px}
+.tile{min-height:108px;text-align:left;color:var(--text);cursor:pointer}.tile b{display:block;margin:8px 0 3px}.tile span{font-size:23px}
+button,input,textarea,select{font:inherit}button{border:0;border-radius:12px;background:var(--accent);color:#06111d;padding:11px 14px;font-weight:750;cursor:pointer}
+button.secondary{background:var(--panel2);border:1px solid var(--line);color:var(--text)}
+button.danger{background:#482431;color:#ffdce2}
+input,textarea,select{width:100%;background:#0b1322;color:var(--text);border:1px solid var(--line);border-radius:11px;padding:12px;margin:5px 0 10px;outline:none}
+label{font-size:12px;color:var(--muted)}.row{display:flex;gap:8px;align-items:center}.row>*{flex:1}
+nav{position:fixed;bottom:0;left:0;right:0;background:#0b1220ed;backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;justify-content:center;z-index:5;padding:8px max(8px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom))}
+nav button{background:transparent;color:var(--muted);padding:9px 10px;font-size:11px;flex:1;max-width:130px}nav button.active{color:var(--accent);background:#16263b}
+.page{display:none}.page.active{display:block}.section-title{font-size:18px;margin:20px 2px 10px}
+.item{padding:11px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px;align-items:center}.item:last-child{border:0}
+.chatlog{height:42vh;min-height:240px;overflow:auto;background:#0b1322;border:1px solid var(--line);border-radius:14px;padding:12px;margin:10px 0}
+.msg{padding:10px 12px;border-radius:13px;margin:8px 0;max-width:92%;white-space:pre-wrap;line-height:1.45}.bot{background:#192942}.user{background:#25445e;margin-left:auto}
+.stat{font-size:23px;font-weight:800}.positive{color:var(--good)}.negative{color:var(--bad)}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:15px}
+@media(min-width:600px){.grid{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<header><div><div class="brand">NOVA<span> AI</span></div><div class="sub">YOUR PERSONAL COMMAND CENTER</div></div><div class="small muted">V1.0</div></header>
+<main>
+<section id="home" class="page active">
+ <div class="hero"><div class="orb"></div><h1>Welcome to NOVA</h1><p class="muted">Your assistant for planning, money management and trading calculations.</p><div class="small muted">Private-first • Data saved on this device</div></div>
+ <div class="grid">
+  <button class="tile" onclick="show('assistant')"><span>✦</span><b>AI Assistant</b><small class="muted">Ask and organise</small></button>
+  <button class="tile" onclick="show('planner')"><span>▦</span><b>Smart Planner</b><small class="muted">Tasks and goals</small></button>
+  <button class="tile" onclick="show('finance')"><span>₹</span><b>Finance</b><small class="muted">Income and expenses</small></button>
+  <button class="tile" onclick="show('trading')"><span>⌁</span><b>Trading Tools</b><small class="muted">Risk and reward</small></button>
+ </div>
+ <div class="panel"><div class="muted small">TODAY'S OVERVIEW</div><div class="row"><div><div class="stat" id="taskCount">0</div><div class="small muted">Open tasks</div></div><div><div class="stat" id="balance">₹0</div><div class="small muted">Net recorded</div></div></div></div>
+ <p class="small muted">Note: NOVA V1 provides offline tools and guided responses. It does not yet connect to a live AI model or execute trades.</p>
+</section>
+
+<section id="assistant" class="page">
+ <h2>✦ NOVA Assistant</h2><p class="muted small">Try: “plan my day”, “trading risk”, “help”, or ask a general question.</p>
+ <div id="chatlog" class="chatlog"><div class="msg bot">Hi! I'm NOVA. I can help with planning, finance records and trading calculations. What would you like to do?</div></div>
+ <div class="row"><input id="chatInput" placeholder="Message NOVA..." onkeydown="if(event.key==='Enter')sendChat()"><button onclick="sendChat()">Send</button></div>
+ <p class="small muted">This first build uses built-in responses, not a generative AI model.</p>
+</section>
+
+<section id="planner" class="page">
+ <h2>▦ Smart Planner</h2><div class="panel"><label>New task</label><input id="taskText" placeholder="e.g. Review market at 9:00 AM"><div class="row"><input id="taskDate" type="date"><button onclick="addTask()">Add task</button></div></div>
+ <div class="section-title">Your tasks</div><div class="panel" id="taskList"></div>
+</section>
+
+<section id="finance" class="page">
+ <h2>₹ Finance Manager</h2><div class="grid"><div class="panel"><div class="small muted">INCOME</div><div class="stat positive" id="incomeTotal">₹0</div></div><div class="panel"><div class="small muted">EXPENSE</div><div class="stat negative" id="expenseTotal">₹0</div></div></div>
+ <div class="panel"><label>Entry type</label><select id="moneyType"><option value="income">Income</option><option value="expense">Expense</option></select><label>Description</label><input id="moneyDesc" placeholder="Salary, food, travel..."><label>Amount (₹)</label><input id="moneyAmount" type="number" min="0.01" step="0.01" placeholder="0"><button onclick="addMoney()">Save entry</button></div>
+ <div class="section-title">Recent entries</div><div class="panel" id="moneyList"></div>
+</section>
+
+<section id="trading" class="page">
+ <h2>⌁ Trading Risk Calculator</h2><p class="muted small">Calculate position size and risk/reward before placing a trade. Not a buy/sell signal.</p>
+ <div class="panel">
+  <label>Account capital (₹)</label><input id="capital" type="number" value="50000">
+  <label>Risk per trade (%)</label><input id="riskPct" type="number" value="1" step="0.1">
+  <label>Entry price (₹)</label><input id="entry" type="number" value="100">
+  <label>Stop-loss price (₹)</label><input id="stop" type="number" value="98">
+  <label>Target price (₹)</label><input id="target" type="number" value="104">
+  <button onclick="calculateTrade()">Calculate</button>
+  <div id="tradeResult" class="panel" style="margin-top:12px">Enter values and calculate.</div>
+ </div>
+</section>
+
+<section id="settings" class="page">
+ <h2>Settings & Privacy</h2><div class="panel"><p>All tasks and finance entries are stored in this browser on this device using local storage.</p><p class="small muted">Clearing browser data may delete your NOVA records. Export your records before changing phones or clearing app data.</p><button class="secondary" onclick="exportData()">Export my data</button> <button class="danger" onclick="clearData()">Delete all local data</button></div>
+ <div class="section-title">About</div><div class="panel">NOVA AI V1.0<br><span class="muted small">Offline-first starter build. No account or subscription required.</span></div>
+</section>
+</main>
+<nav>
+ <button class="active" data-page="home" onclick="show('home')">⌂<br>Home</button>
+ <button data-page="assistant" onclick="show('assistant')">✦<br>Assistant</button>
+ <button data-page="planner" onclick="show('planner')">▦<br>Planner</button>
+ <button data-page="trading" onclick="show('trading')">⌁<br>Trading</button>
+ <button data-page="settings" onclick="show('settings')">⚙<br>Settings</button>
+</nav>
+<script>
+const get=(k,d=[])=>{try{return JSON.parse(localStorage.getItem('nova_'+k))??d}catch{return d}};
+const put=(k,v)=>localStorage.setItem('nova_'+k,JSON.stringify(v));
+function show(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===id));if(id==='planner')renderTasks();if(id==='finance')renderMoney();updateHome()}
+function updateHome(){let t=get('tasks');let m=get('money');document.getElementById('taskCount').textContent=t.filter(x=>!x.done).length;document.getElementById('balance').textContent='₹'+(m.reduce((s,x)=>s+(x.type==='income'?x.amount:-x.amount),0)).toFixed(2)}
+function addTask(){let v=document.getElementById('taskText').value.trim();if(!v)return alert('Enter a task');let a=get('tasks');a.unshift({id:Date.now(),text:v,date:document.getElementById('taskDate').value,done:false});put('tasks',a);document.getElementById('taskText').value='';renderTasks();updateHome()}
+function renderTasks(){let a=get('tasks');document.getElementById('taskList').innerHTML=a.length?a.map(x=>`<div class="item"><div><input style="width:auto;margin:0 7px 0 0" type="checkbox" ${x.done?'checked':''} onchange="toggleTask(${x.id})"><span style="${x.done?'text-decoration:line-through;color:#9aabc6':''}">${esc(x.text)}</span><div class="small muted">${x.date||'No due date'}</div></div><button class="danger" onclick="deleteTask(${x.id})">×</button></div>`).join(''):'<span class="muted">No tasks yet. Add your first task above.</span>'}
+function toggleTask(id){let a=get('tasks').map(x=>x.id===id?{...x,done:!x.done}:x);put('tasks',a);renderTasks();updateHome()}
+function deleteTask(id){put('tasks',get('tasks').filter(x=>x.id!==id));renderTasks();updateHome()}
+function addMoney(){let type=document.getElementById('moneyType').value,desc=document.getElementById('moneyDesc').value.trim(),amount=Number(document.getElementById('moneyAmount').value);if(!desc||!Number.isFinite(amount)||amount<=0)return alert('Enter a description and valid amount');let a=get('money');a.unshift({id:Date.now(),type,desc,amount,date:new Date().toLocaleDateString()});put('money',a);document.getElementById('moneyDesc').value='';document.getElementById('moneyAmount').value='';renderMoney();updateHome()}
+function renderMoney(){let a=get('money'),inc=a.filter(x=>x.type==='income').reduce((s,x)=>s+x.amount,0),out=a.filter(x=>x.type==='expense').reduce((s,x)=>s+x.amount,0);document.getElementById('incomeTotal').textContent='₹'+inc.toFixed(2);document.getElementById('expenseTotal').textContent='₹'+out.toFixed(2);document.getElementById('moneyList').innerHTML=a.length?a.map(x=>`<div class="item"><div>${esc(x.desc)}<div class="small muted">${x.date}</div></div><b class="${x.type==='income'?'positive':'negative'}">${x.type==='income'?'+':'−'}₹${x.amount.toFixed(2)}</b></div>`).join(''):'<span class="muted">No entries yet.</span>'}
+function calculateTrade(){let c=+capital.value,r=+riskPct.value,e=+entry.value,s=+stop.value,t=+target.value;let dist=Math.abs(e-s),risk=c*r/100;if(![c,r,e,s,t].every(Number.isFinite)||c<=0||r<=0||r>100||e<=0||dist<=0||e===s){tradeResult.textContent='Please enter valid positive values and a stop-loss different from entry.';return}let qty=Math.floor(risk/dist),potential=Math.abs(t-e)*qty,rr=Math.abs(t-e)/dist;tradeResult.innerHTML=`<div class="small muted">MAX RISK BUDGET</div><div class="stat">₹${risk.toFixed(2)}</div><div class="item"><span>Approx. quantity</span><b>${qty}</b></div><div class="item"><span>Potential reward at target</span><b class="positive">₹${potential.toFixed(2)}</b></div><div class="item"><span>Risk : Reward</span><b>1 : ${rr.toFixed(2)}</b></div><p class="small muted">Excludes brokerage, taxes, slippage and lot-size constraints. Verify contract specifications before trading.</p>`}
+function addMsg(text,who){let d=document.createElement('div');d.className='msg '+who;d.textContent=text;chatlog.appendChild(d);chatlog.scrollTop=chatlog.scrollHeight}
+function sendChat(){let v=chatInput.value.trim();if(!v)return;chatInput.value='';addMsg(v,'user');let q=v.toLowerCase(),reply;if(q.includes('plan')||q.includes('day'))reply='Let’s organise your day. Open Planner and add your top 3 tasks. Start with the most important task, then schedule breaks.';else if(q.includes('trading')||q.includes('risk')||q.includes('stop loss'))reply='Use the Trading tab to calculate position size, maximum planned risk and risk/reward. I do not have live market data or provide guaranteed trade calls in this version.';else if(q.includes('expense')||q.includes('money')||q.includes('budget'))reply='Open Finance to record income and expenses. Your net recorded balance updates on the Home screen.';else if(q.includes('hello')||q.includes('hi')||q.includes('hey'))reply='Hello! I’m NOVA. I can help you organise tasks, record money and calculate trading risk. What shall we work on?';else if(q.includes('help'))reply='I can currently help with: Planner (tasks), Finance (income/expenses), Trading (risk calculator), and basic guidance. Generative AI and live data are planned for a later version.';else reply='I’m currently running in starter mode, so I can’t answer every open-ended question yet. Try “help”, “plan my day”, “trading risk”, or “finance”. The next development stage will add a real AI model.';setTimeout(()=>addMsg(reply,'bot'),180)}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function exportData(){let data={tasks:get('tasks'),money:get('money'),exportedAt:new Date().toISOString()};let b=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='nova-backup.json';a.click();URL.revokeObjectURL(u)}
+function clearData(){if(confirm('Delete all NOVA tasks and finance records from this device?')){localStorage.removeItem('nova_tasks');localStorage.removeItem('nova_money');renderTasks();renderMoney();updateHome();alert('Local NOVA records deleted.')}}
+if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+updateHome();
+</script>
+</body></html>
